@@ -1,0 +1,23 @@
+{
+  "name": "currencytracker",
+  "version": "1.0.0",
+  "description": "tracks CND, EUR and USD currencies with BRL as base value",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node controller/app/app.js"
+  },
+  "author": "dgmieth.me",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^11.0.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
+    "mysql2": "^2.3.3",
+    "node-cron": "^3.0.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6"
+  }
+}

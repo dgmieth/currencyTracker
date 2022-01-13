@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en" class="h-100">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/imgs/currencyFavicon.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Currency tracker</title>
+</head>
+<body class="h-100">
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <symbol id="check-circle-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+        </symbol>
+        <symbol id="info-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+        </symbol>
+        <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
+          <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"/>
+        </symbol>
+      </svg>
+    <style>
+        .btnStyle{
+            margin-bottom: 5px;
+            width: 100%!important;
+        }
+    </style>
+    <style>
+        * {
+            margin:0px;
+            padding:0px;
+            box-sizing:border-box;
+            font-family:sans-serif;
+          }
+           
+          #sidebar-wrapper {
+            position:absolute;
+            top:0;
+            left:-200px;
+            width:200px;
+            height:100%;
+            background:#d84315;
+            transition: all 300ms linear;
+            z-index: 10;
+          }
+          #sidebar-wrapper.active {
+            left:0px;
+          }
+          #sidebar-wrapper .toggle-btn {
+            position:absolute;
+            left:220px;
+            top:75px;
+            transition: display 1s;
+          }
+          #sidebar-wrapper .toggle-btn span {
+            display:block;
+            width:30px;
+            height:5px;
+            background:#d84315;
+            margin:5px 0px;
+            cursor:pointer;
+          }
+          #sidebar-wrapper div.list div.item, button.item {
+            padding:15px 10px;
+            border-bottom:1px solid #444;
+            color:#fcfcfc;
+            text-transform:uppercase;
+            font-size:15px;
+          }
+          #sidebar-wrapper div.list button.item {
+            background-color: transparent;
+            border: none;
+            border-bottom: 1px solid #444;
+            width: 100%;    
+          }
+          #sidebar-wrapper div.list button.item:hover{
+              font-style: italic;
+          }
+          #sidebar-wrapper div.list button.item.active{
+              font-size:18px;
+              font-weight: 900;
+          }
+          .colHeaders{
+                        background: #f4511e;
+                        color: white;
+                        font-weight: bold;
+                    }
+                    .colInfo{
+                        height: 27px;
+                        border-bottom: black .5px solid;
+                    }
+                    .countryIcon{
+                        height: 25px;
+                    }
+    </style>
+        <div id="sidebar-wrapper" class="my-auto mx-auto text-center" style="height: 100%!important;">
+            <div id="toggleBtn" class="toggle-btn" onclick="toggleSideBar()" style="display: block;">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>  
+            <div class="row h-100 w-100 mx-auto my-auto" style="padding: 0;overflow-y: auto;">
+                <div class="col-12 row w-100 .container-fluid mx-auto my-auto" style="padding: 0 3px;">
+                    <hr>
+                    <div class="col-12">
+                        <div class="h1" style="color: white;font-weight: 900;">Choose an option</div>
+                    </div>
+                    <hr>
+                    <div class="col-12 w-100">
+                        <button id="fiveYearsAgo" type="button" class="btn btn-info btnStyle">Five years ago</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="fourYearsAgo" type="button" class="btn btn-info btnStyle">Four years ago</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="threeYearsAgo" type="button" class="btn btn-info btnStyle">Three years ago</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="twoYearsAgo"  type="button" class="btn btn-info btnStyle">Two years ago</button>
+                    </div>
+                    <hr>
+                    <div class="col-12 w-100">
+                        <button id="lastYear"  type="button" class="btn btn-secondary btnStyle">Last year</button>
+                    </div>
+                    <hr>
+                    <div class="col-12 w-100">
+                        <button id="lastMonth" type="button" class="btn btn-warning btnStyle">Last month</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="last30Days" type="button" class="btn btn-warning btnStyle">Last 30 days</button>
+                    </div>
+                    <hr>
+                    <div class="col-12 w-100">
+                        <button id="thisMonth"  type="button" class="btn btn-primary btnStyle">This month</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="today" type="button" class="btn btn-primary btnStyle">Today</button>
+                    </div>
+                    <hr>
+                    <div class="col-12 w-100">
+                        <button id="todayValues"  type="button" class="btn btn-success btnStyle">Today values</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- alerts -->
+        <div id="alertDiv" class="container-fluid mx-auot-my-auto" style="position: absolute;top: 15%;left: 10;right: 10;">
+            
+        </div>
+        <!-- alerts end -->
+        <div id="mainContent" class="h-100" style="width:100%!important;background-color: #fbe9e7;">
+            
+        </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script>
+    toggleSideBar()
+    var data = null
+    const ids = {
+        mainRowWrapper : 'mainRowWrapper',
+        realToForeign : 'btnradio1',
+        foreignToReal : 'btnradio2'
+    }
+    const btnTypes = {
+        FIVEYEARS : '5Years',
+        FOURYEARS : '4years',
+        THREEYEARS : '3Years',
+        TWOYEARS : '2Years',
+        LASTYEAR : 'LastYears',
+        LASTMONTH : 'LastMonth',
+        LAST30DAYS : 'Last30Days',
+        THISMONTH : 'ThisMonth',
+        TODAYVALUES : 'TodayValues',
+        TODAY : 'Today'
+    }
+    var btnClicked = ''
+    var component = `
+        <div class=".container-fluid w-100 mx-auto my-auto" style="height: 20%!important;">
+                <div class="btn-group mx-auto my-auto w-100" role="group" aria-label="Basic radio toggle button group">
+                    <div class="d-flex justify-content-evenly w-100">
+                        <div class="p-2 bd-highlight">
+                            <input type="radio" class="btn-check" name="btnradio" id="${ids.realToForeign}" autocomplete="off">
+                            <label class="btn btn-outline-dark" for="btnradio1">Reais -> foreign currency</label>
+                        </div>
+                        <div class="p-2 bd-highlight">
+                            <input type="radio" class="btn-check" name="btnradio" id="${ids.foreignToReal}" autocomplete="off">
+                            <label class="btn btn-outline-dark" for="btnradio2">Foreign currency -> reais</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="${ids.mainRowWrapper}" class=".container-fluid w-100 mx-auto my-auto" style="height: 80%!important;overflow-y: auto;">
+                
+            </div>
+        `
+    fetchData()
+    //FIVE YEARS AGO BTN
+    document.getElementById(`fiveYearsAgo`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.FIVEYEARS)
+    })
+    //FOUR YEARS AGO BTN
+    document.getElementById(`fourYearsAgo`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.FOURYEARS)
+    })
+    //THREE YEARS AGO BTN
+    document.getElementById(`threeYearsAgo`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.THREEYEARS)
+    })
+    //TWO YEARS AGO BTN
+    document.getElementById(`twoYearsAgo`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.TWOYEARS)
+    })
+    document.getElementById(`lastYear`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.LASTYEAR)
+    })
+    document.getElementById(`lastMonth`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.LASTMONTH)
+    })
+    document.getElementById(`last30Days`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.LAST30DAYS)
+    })
+    document.getElementById(`thisMonth`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.THISMONTH)
+    })
+    document.getElementById(`todayValues`).addEventListener('click',e=>{
+        fetchData()
+        commonFunctionCallsInBtns(btnTypes.TODAYVALUES)
+    })
+    document.getElementById(`today`).addEventListener('click',e=>{
+        fetchData()
+        commonFunctionCallsInBtns(btnTypes.TODAY)
+    })
+    //FUNCTIONS
+    /*common function calls in btns*/
+    function commonFunctionCallsInBtns(btnType){
+        document.getElementById('mainContent').innerHTML = component
+        toggleSideBar()
+        loadCurrencyChangeListenres()
+        btnClicked = btnType
+    }
+    /*toggle side bar*/
+    function toggleSideBar(){
+        document.getElementById(`sidebar-wrapper`).classList.toggle('active')
+    }
+    /*fetchData*/
+    function fetchData(){
+        fetch(`/info`)
+        .then(res => { return res.json()})
+        .then(answer => {
+            if(answer.erro){
+                showAlert('danger','It was no possible to get data from database')
+                return console.log(`fiveYearsAgo -> error`, answer)
+            }
+            data = answer.data})
+        .catch(err => {
+            console.log('fiverYearsAgo ->', err)
+            showAlert('danger','It was no possible to get data from database')})
+            
+    }
+    /*show alert*/
+    function showAlert(type,text){
+        if(type==='danger'){
+            document.getElementById('alertDiv').innerHTML = `
+                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                    <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="#exclamation-triangle-fill"/></svg>
+                    <div id="alertDivText">
+                        ${text}
+                </div>
+              </div>`
+            document.getElementById('alertDiv').style.display = 'block'
+            setInterval(() => {
+                document.getElementById('alertDiv').style.display = 'none'
+                document.getElementById('alertDiv').innerHTML = ''
+            }, 5000);
+        }
+    }
+    /*load currency change event listerers*/
+    function loadCurrencyChangeListenres(){
+        const headersConst = `<div class="container mx-auto my-auto row">
+                    <div class="col-3 colHeaders"></div>
+                    <div class="col-1 colHeaders"></div>
+                    <div class="col-3 colHeaders">Amount</div>
+                    <div class="col-1 colHeaders"></div>
+                    <div class="col-1 colHeaders"></div>
+                    <div class="col-3 colHeaders">Amount</div>
+                    <!-- stariting with data -->`
+        document.getElementById(ids.realToForeign).addEventListener('click',e=>{
+            //5 YEARS
+            if(btnClicked===btnTypes.FIVEYEARS){
+                var inneText = ``
+                data[0].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYear}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //4 YEARS
+            if(btnClicked===btnTypes.FOURYEARS){
+                var inneText = ``
+                data[1].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYear}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //3 YEARS
+            if(btnClicked===btnTypes.THREEYEARS){
+                var inneText = ``
+                data[2].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYear}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //2 YEARS
+            if(btnClicked===btnTypes.TWOYEARS){
+                var inneText = ``
+                data[3].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYear}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //LAST YEAR
+            if(btnClicked===btnTypes.LASTYEAR){
+                var inneText = ``
+                data[4].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[4].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //LAST MONTH
+            if(btnClicked===btnTypes.LASTMONTH){
+                var inneText = ``
+                data[5].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[5].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //LAST 30 DAYS
+            if(btnClicked===btnTypes.LAST30DAYS){
+                var inneText = ``
+                data[6].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[6].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //THIS MONTH
+            if(btnClicked===btnTypes.THISMONTH){
+                var inneText = ``
+                data[7].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[7].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //TODAY`S VALUES
+            if(btnClicked===btnTypes.TODAYVALUES){
+                var inneText = ``
+                data[8].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[8].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.fetchTime}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.value).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //TODAY
+            if(btnClicked===btnTypes.TODAY){
+                var inneText = ``
+                data[9].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+        })
+        /* ============================================================================================================================
+           ============================================================================================================================
+           ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+            ============================================================================================================================
+        */
+                            
+        document.getElementById(ids.foreignToReal).addEventListener('click',e=>{
+            //5 YEARS
+            if(btnClicked===btnTypes.FIVEYEARS){
+                var inneText = ``
+                data[0].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYear}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //4 YEARS
+            if(btnClicked===btnTypes.FOURYEARS){
+                var inneText = ``
+                data[1].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYear}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //3 YEARS
+            if(btnClicked===btnTypes.THREEYEARS){
+                var inneText = ``
+                data[2].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYear}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //2 YEARS
+            if(btnClicked===btnTypes.TWOYEARS){
+                var inneText = ``
+                data[3].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYear}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //LAST YEAR
+            if(btnClicked===btnTypes.LASTYEAR){
+                var inneText = ``
+                data[4].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[4].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //LAST MONTH
+            if(btnClicked===btnTypes.LASTMONTH){
+                var inneText = ``
+                data[5].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[5].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //LAST 30 DAYS
+            if(btnClicked===btnTypes.LAST30DAYS){
+                var inneText = ``
+                data[6].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[6].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //THIS MONTH
+            if(btnClicked===btnTypes.THISMONTH){
+                var inneText = ``
+                data[7].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[7].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //TODAY'S VALUES
+            if(btnClicked===btnTypes.TODAYVALUES){
+                var inneText = ``
+                data[8].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[8].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.fetchTime}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.value)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //TODAY
+            if(btnClicked===btnTypes.TODAY){
+                var inneText = ``
+                data[9].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+        })
+    }
+</script>
+</html>
