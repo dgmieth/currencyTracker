@@ -24,10 +24,10 @@ exports.renderRootPage = (req,res,next) =>{
 exports.fetchInformation = (req,res,next) =>{
     Currency.fetchInformation()
     .then(([info, infoMeta])=>{
-        console.log(info[4])
-        console.log(info[5])
-        console.log(info[6])
-        console.log(info[7])
+        // console.log(info[4])
+        // console.log(info[5])
+        // console.log(info[6])
+        // console.log(info[7])
         res.json({error: false, data:info})
     })
     .catch(err => {
@@ -36,8 +36,8 @@ exports.fetchInformation = (req,res,next) =>{
     })
 }
 //node cron
-cron.schedule('* */18 10-16 * * *',()=>{
-    // console.log('cron')
+cron.schedule('27 */12 8-18 * * *',()=>{
+    console.log('cron')
     axios.get(`https://freecurrencyapi.net/api/v2/latest?apikey=${process.env.API_KEY}d&base_currency=${process.env.API_BASE_CUR}`)
     .then(response => {
         Currency.getCurrentDate()
@@ -52,22 +52,24 @@ cron.schedule('* */18 10-16 * * *',()=>{
             Currency.insertTodaysCurrencyData(currencyData)
             .then(([answer,meta])=>{
                 console.log({youReached: "cronSchedule",
-                            db: "saved"})})})
+                            db: "saved"})})
+                return})
             .catch(err => {
                 console.log('insertTodaysCurrencyData => ',err)
                 console.log({youReached: "cronSchedule",
-                            db: "not saved"})})
+                            db: "not saved"})
+                return})
         })
         .catch(err => {
             console.log('getCurrentTime-> ',error)
-        console.log({youReached: "cronSchedule",
+            console.log({youReached: "cronSchedule",
                         db: "cronNotExecuted"})
-        })
+            return })
     .catch(error => {
         console.log('axios ->', error)
         console.log({youReached: "cronSchedule",
                         db: "cronNotExecuted"})
-    })
+        return})
 },{
     scheduled: true,
     timezone: "America/New_York"

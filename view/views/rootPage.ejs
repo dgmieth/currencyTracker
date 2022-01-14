@@ -108,39 +108,49 @@
                     </div>
                     <hr>
                     <div class="col-12 w-100">
-                        <button id="fiveYearsAgo" type="button" class="btn btn-info btnStyle">Five years ago</button>
+                        <button id="today" type="button" class="btn btn-primary btnStyle">Today</button>
                     </div>
                     <div class="col-12 w-100">
-                        <button id="fourYearsAgo" type="button" class="btn btn-info btnStyle">Four years ago</button>
-                    </div>
-                    <div class="col-12 w-100">
-                        <button id="threeYearsAgo" type="button" class="btn btn-info btnStyle">Three years ago</button>
-                    </div>
-                    <div class="col-12 w-100">
-                        <button id="twoYearsAgo"  type="button" class="btn btn-info btnStyle">Two years ago</button>
+                        <button id="thisMonth"  type="button" class="btn btn-primary btnStyle">This month</button>
                     </div>
                     <hr>
+                    <div class="col-12 w-100">
+                        <button id="last30Days" type="button" class="btn btn-warning btnStyle">Last 30 days</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="lastMonth" type="button" class="btn btn-warning btnStyle">Last month</button>
+                    </div>
+                    <hr>
+                    <div class="col-12 w-100">
+                        <button id="thisYear"  type="button" class="btn btn-secondary btnStyle">This year</button>
+                    </div>
                     <div class="col-12 w-100">
                         <button id="lastYear"  type="button" class="btn btn-secondary btnStyle">Last year</button>
                     </div>
                     <hr>
                     <div class="col-12 w-100">
-                        <button id="lastMonth" type="button" class="btn btn-warning btnStyle">Last month</button>
+                        <button id="twoYearsAgo"  type="button" class="btn btn-info btnStyle">Two years ago</button>
                     </div>
                     <div class="col-12 w-100">
-                        <button id="last30Days" type="button" class="btn btn-warning btnStyle">Last 30 days</button>
+                        <button id="threeYearsAgo" type="button" class="btn btn-info btnStyle">Three years ago</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="fourYearsAgo" type="button" class="btn btn-info btnStyle">Four years ago</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="fiveYearsAgo" type="button" class="btn btn-info btnStyle">Five years ago</button>
                     </div>
                     <hr>
+                    <hr style="margin: 5px 0">
                     <div class="col-12 w-100">
-                        <button id="thisMonth"  type="button" class="btn btn-primary btnStyle">This month</button>
+                        <button id="todayValues"  type="button" class="btn btn-outline-light btnStyle">Today's values</button>
                     </div>
+                    <hr style="margin: 5px 0">
                     <div class="col-12 w-100">
-                        <button id="today" type="button" class="btn btn-primary btnStyle">Today</button>
+                        <button id="chart" type="button" class="btn btn-outline-light btnStyle">Charts</button>
                     </div>
-                    <hr>
-                    <div class="col-12 w-100">
-                        <button id="todayValues"  type="button" class="btn btn-success btnStyle">Today values</button>
-                    </div>
+                    <hr style="margin: 5px 0">
+                    <hr style="margin: 5px 0">
                 </div>
             </div>
         </div>
@@ -154,13 +164,25 @@
         </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
 <script>
     toggleSideBar()
     var data = null
     const ids = {
         mainRowWrapper : 'mainRowWrapper',
+        mainChartWrapper: 'mainChartWrapper',
         realToForeign : 'btnradio1',
-        foreignToReal : 'btnradio2'
+        foreignToReal : 'btnradio2',
+        radio1:'radio1',
+        radio2:'radio2',
+        radio3:'radio3',
+        radio4:'radio4',
+        radio5:'radio5',
+        radio6:'radio6',
+        radio7:'radio7',
+        radio8:'radio8',
+        radio9:'radio9',
+        radio10:'radio10'
     }
     const btnTypes = {
         FIVEYEARS : '5Years',
@@ -170,11 +192,27 @@
         LASTYEAR : 'LastYears',
         LASTMONTH : 'LastMonth',
         LAST30DAYS : 'Last30Days',
+        THISYEAR: 'ThisYear',
         THISMONTH : 'ThisMonth',
         TODAYVALUES : 'TodayValues',
-        TODAY : 'Today'
+        TODAY : 'Today',
+        CHARTS: 'Charts',
+        THISYEAR: 'ThisYear'
+    }
+    const chartStates= {
+        FIVEYEARS : '5Years',
+        FOURYEARS : '4years',
+        THREEYEARS : '3Years',
+        TWOYEARS : '2Years',
+        LASTYEAR : 'LastYears',
+        LASTMONTH : 'LastMonth',
+        LAST30DAYS : 'Last30Days',
+        THISYEAR: 'ThisYear',
+        THISMONTH : 'ThisMonth',
+        TODAYVALUES : 'TodayValues',
     }
     var btnClicked = ''
+    var chartClicked = ''
     var component = `
         <div class=".container-fluid w-100 mx-auto my-auto" style="height: 20%!important;">
                 <div class="btn-group mx-auto my-auto w-100" role="group" aria-label="Basic radio toggle button group">
@@ -193,6 +231,57 @@
             <div id="${ids.mainRowWrapper}" class=".container-fluid w-100 mx-auto my-auto" style="height: 80%!important;overflow-y: auto;">
                 
             </div>
+        `
+        var chartComponent = `
+        <div class=".container-fluid w-100 mx-auto my-auto" style="height: 100%!important;">
+            <div class="btn-group mx-auto my-auto w-100" role="group" aria-label="Basic radio toggle button group" style="height: 17%!important;overflow-y:auto">
+                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio1}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio1}">Today's values</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio2}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio2}">This month</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio3}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio3}">Last 30 days</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio4}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio4}">Last month</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio5}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio5}">This year</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio6}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio6}">Last year</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio7}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio7}">+ two years ago</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio8}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio8}">+ three years ago</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio9}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio9}">+ four years ago</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio10}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio10}">+ five years ago</label>
+                    </div>
+                </div>
+            </div>
+            <div id="${ids.mainChartWrapper}" class=".container-fluid w-100 mx-auto my-auto" style="height: 83%!important;overflow-y: auto;">
+                <canvas id="myChart" class=".container-fluid mx-auto my-auto w-100"></canvas>
+            </div>
+        </div>
         `
     fetchData()
     //FIVE YEARS AGO BTN
@@ -231,16 +320,28 @@
         fetchData()
         commonFunctionCallsInBtns(btnTypes.TODAY)
     })
+    document.getElementById(`thisYear`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.THISYEAR)
+    })
+    document.getElementById(`chart`).addEventListener('click',e=>{
+        chartClicked = ''
+        chartClicked = chartStates.TODAYVALUES
+        commonFunctionCallsInBtns(btnTypes.CHARTS)
+    })
     //FUNCTIONS
     /*common function calls in btns*/
     function commonFunctionCallsInBtns(btnType){
         document.getElementById('mainContent').innerHTML = component
-        toggleSideBar()
         loadCurrencyChangeListenres()
+        toggleSideBar()
         btnClicked = btnType
+        document.getElementById(ids.foreignToReal).click()
     }
     /*toggle side bar*/
-    function toggleSideBar(){
+    function toggleSideBar(view = true){
+        if(view===false){
+            return document.getElementById(`sidebar-wrapper`).classList.remove('active')    
+        }
         document.getElementById(`sidebar-wrapper`).classList.toggle('active')
     }
     /*fetchData*/
@@ -286,6 +387,7 @@
                     <div class="col-3 colHeaders">Amount</div>
                     <!-- stariting with data -->`
         document.getElementById(ids.realToForeign).addEventListener('click',e=>{
+            toggleSideBar(false)
             //5 YEARS
             if(btnClicked===btnTypes.FIVEYEARS){
                 var inneText = ``
@@ -363,6 +465,28 @@
                     return 0
                 })
                 data[4].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //THIS YEAR
+            if(btnClicked===btnTypes.THISYEAR){
+                var inneText = ``
+                data[11].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[11].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
                         <div class="col-1 colInfo">
@@ -481,6 +605,10 @@
                         <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
+            //CHART
+            if(btnClicked===btnTypes.CHARTS){
+                chartCommonFunctions(false)
+            }
         })
         /* ============================================================================================================================
            ============================================================================================================================
@@ -503,6 +631,7 @@
         */
                             
         document.getElementById(ids.foreignToReal).addEventListener('click',e=>{
+            toggleSideBar(false)
             //5 YEARS
             if(btnClicked===btnTypes.FIVEYEARS){
                 var inneText = ``
@@ -637,6 +766,28 @@
                         <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
+            //THIS YEAR
+            if(btnClicked===btnTypes.THISYEAR){
+                var inneText = ``
+                data[11].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[11].forEach(d => {
+                    inneText = `${inneText}
+                        <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">$ 1,00</div>
+                        <div class="col-1 colInfo"><strong>>></strong></div>
+                        <div class="col-1 colInfo">
+                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
+                        </div>
+                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
             //THIS MONTH
             if(btnClicked===btnTypes.THISMONTH){
                 var inneText = ``
@@ -698,7 +849,129 @@
                         <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
+            //CHART
+            if(btnClicked===btnTypes.CHARTS){
+                chartCommonFunctions()
+            }
         })
+    }
+    function chartCommonFunctions(foreignToReal=true){
+        document.getElementById(ids.mainRowWrapper).innerHTML = `${chartComponent}`
+        loadChartBtnListeners(foreignToReal)
+        document.getElementById(ids.radio1).click()
+    }
+    function loadChartBtnListeners(foreignToReal=true){
+        data[10].sort((a,b)=>{
+            if (a.test1 > b.test1) {return 1 }
+            if (a.test1 < b.test1) {return -1 }
+            if (a.test2 > b.test2) {return 1 }
+            if (a.test2 < b.test2) {return -1 }
+            return 0
+        })
+        document.getElementById(ids.radio1).addEventListener('click',e=>{
+            dropMyChart()
+            data[8].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0})
+                parseData(data[8],foreignToReal)})
+        document.getElementById(ids.radio2).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('thisMonth')){return true}})
+            parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio3).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('last30Days')){return true}})
+            parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio4).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('lastMonth')){return true}})
+            parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio5).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('thisYear')){return true}})
+            parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio6).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('lastYear')){return true}})
+            parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio7).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('thisYear')||a.label.match('lastYear')||a.label.match(/2{1}/ig)){return true}})
+            parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio8).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('thisYear')||a.label.match('lastYear')||a.label.match(/[2-3]/ig)){return true}})
+            parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio9).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('thisYear')||a.label.match('lastYear')||a.label.match(/[2-4]/ig)){return true}})
+            parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio10).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('thisYear')||a.label.match('lastYear')||a.label.match(/[2-5]/ig)){return true}})
+            parseData(filtered,foreignToReal)})
+    }
+    function parseData(array,foreignToReal){
+        console.log(array)
+        var labels = [], dArray = [], cur = ''
+        array.forEach(d => {
+            if(!labels.includes(d.fetchTime)){
+                labels.push(d.fetchTime)
+            }
+            if(d.currency!==cur){
+                cur=d.currency
+                const innerArray = array.filter(a => {
+                    if(a.currency===cur){return true}
+                })
+                var vals = []
+                innerArray.forEach(e => {
+                    vals.push(parseFloat(foreignToReal ? parseFloat(1/parseFloat(e.value)).toFixed(2) : parseFloat(e.value)).toFixed(3))
+                })
+                console.log(innerArray)
+                dArray.push([cur,
+                cur==='CAD' ? 'rgb(255, 99, 132)' : cur === 'USD' ?  'rgb(0, 0, 255)' : 'rgb(15, 255, 15)',
+                vals])
+            }
+        })
+        console.log(labels)
+        console.log(dArray)
+        createChart(labels,dArray)
+    }
+    function dropMyChart(){
+        if(typeof(myChart)==='object'){myChart.destroy()
+            document.getElementById('myChart').innerHTML = ''
+        }
+    }
+    var myChart = ''
+    function createChart(dateArray = [],dataArray=[]){
+        var sets = []
+        dropMyChart()
+        dataArray.forEach(d=>{
+            sets.push({
+                label: d[0],
+                backgroundColor: d[1],
+                borderColor: d[1],
+                data: d[2]})
+        })
+        const labels = []
+        const charData = {
+            labels: dateArray,
+            datasets: sets
+        }
+        const config = {
+            type: 'line',
+            data: charData,
+            options: {
+                scales: {
+                    yAxis: {
+                        min: 0
+                    }
+                },
+                borderWidth: .3
+            }
+        }
+        myChart = new Chart(document.getElementById('myChart'),config)
     }
 </script>
 </html>
