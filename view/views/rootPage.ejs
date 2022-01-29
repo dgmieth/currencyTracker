@@ -91,7 +91,7 @@
                         border-bottom: black .5px solid;
                     }
                     .countryIcon{
-                        height: 25px;
+                        width: 20px;
                     }
     </style>
         <div id="sidebar-wrapper" class="my-auto mx-auto text-center" style="height: 100%!important;">
@@ -126,6 +126,9 @@
                     </div>
                     <div class="col-12 w-100">
                         <button id="lastYear"  type="button" class="btn btn-secondary btnStyle">Last year</button>
+                    </div>
+                    <div class="col-12 w-100">
+                        <button id="last12Months"  type="button" class="btn btn-secondary btnStyle">Last 12 months</button>
                     </div>
                     <hr>
                     <div class="col-12 w-100">
@@ -182,7 +185,8 @@
         radio7:'radio7',
         radio8:'radio8',
         radio9:'radio9',
-        radio10:'radio10'
+        radio10:'radio10',
+        radio11: 'radio11'
     }
     const btnTypes = {
         FIVEYEARS : '5Years',
@@ -197,7 +201,8 @@
         TODAYVALUES : 'TodayValues',
         TODAY : 'Today',
         CHARTS: 'Charts',
-        THISYEAR: 'ThisYear'
+        THISYEAR: 'ThisYear',
+        LAST12MONTHS: 'Last12Months'
     }
     const chartStates= {
         FIVEYEARS : '5Years',
@@ -210,6 +215,7 @@
         THISYEAR: 'ThisYear',
         THISMONTH : 'ThisMonth',
         TODAYVALUES : 'TodayValues',
+        LAST12MONTHS: 'Last12Months'
     }
     var btnClicked = ''
     var chartClicked = ''
@@ -235,7 +241,7 @@
         var chartComponent = `
         <div class=".container-fluid w-100 mx-auto my-auto" style="height: 100%!important;">
             <div class="btn-group mx-auto my-auto w-100" role="group" aria-label="Basic radio toggle button group" style="height: 17%!important;overflow-y:auto">
-                <div class="d-flex justify-content-center align-items-center flex-wrap">
+                <div class="d-flex justify-content-center align-items-center flex-wrap w-100">
                     <div class="p-2 bd-highlight">
                         <input type="radio" class="btn-check" name="radio" id="${ids.radio1}" autocomplete="off">
                         <label class="btn btn-outline-dark" for="${ids.radio1}">Today's values</label>
@@ -261,6 +267,10 @@
                         <label class="btn btn-outline-dark" for="${ids.radio6}">Last year</label>
                     </div>
                     <div class="p-2 bd-highlight">
+                        <input type="radio" class="btn-check" name="radio" id="${ids.radio11}" autocomplete="off">
+                        <label class="btn btn-outline-dark" for="${ids.radio11}">Last 12 months</label>
+                    </div>
+                    <div class="p-2 bd-highlight">
                         <input type="radio" class="btn-check" name="radio" id="${ids.radio7}" autocomplete="off">
                         <label class="btn btn-outline-dark" for="${ids.radio7}">+ two years ago</label>
                     </div>
@@ -278,8 +288,10 @@
                     </div>
                 </div>
             </div>
-            <div id="${ids.mainChartWrapper}" class=".container-fluid w-100 mx-auto my-auto" style="height: 83%!important;overflow-y: auto;">
-                <canvas id="myChart" class=".container-fluid mx-auto my-auto w-100"></canvas>
+            <div id="${ids.mainChartWrapper}" class=".container-fluid w-100 mx-auto my-auto" style="height:83%!important;">
+		<div class="mx-auto my-auto" style="height:90%;width:70vw;overflow-y: auto;">
+			<canvas id="myChart"></canvas>
+		</div>
             </div>
         </div>
         `
@@ -309,6 +321,9 @@
     document.getElementById(`last30Days`).addEventListener('click',e=>{
         commonFunctionCallsInBtns(btnTypes.LAST30DAYS)
     })
+    document.getElementById(`last12Months`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.LAST12MONTHS)
+    })
     document.getElementById(`thisMonth`).addEventListener('click',e=>{
         commonFunctionCallsInBtns(btnTypes.THISMONTH)
     })
@@ -323,6 +338,9 @@
     document.getElementById(`thisYear`).addEventListener('click',e=>{
         commonFunctionCallsInBtns(btnTypes.THISYEAR)
     })
+    document.getElementById(`thisYear`).addEventListener('click',e=>{
+        commonFunctionCallsInBtns(btnTypes.THISYEAR)
+    })
     document.getElementById(`chart`).addEventListener('click',e=>{
         chartClicked = ''
         chartClicked = chartStates.TODAYVALUES
@@ -331,6 +349,7 @@
     //FUNCTIONS
     /*common function calls in btns*/
     function commonFunctionCallsInBtns(btnType){
+        document.getElementById('mainContent').innerHTML = ''
         document.getElementById('mainContent').innerHTML = component
         loadCurrencyChangeListenres()
         toggleSideBar()
@@ -378,31 +397,24 @@
     }
     /*load currency change event listerers*/
     function loadCurrencyChangeListenres(){
-        const headersConst = `<div class="container mx-auto my-auto row">
-                    <div class="col-3 colHeaders"></div>
-                    <div class="col-1 colHeaders"></div>
-                    <div class="col-3 colHeaders">Amount</div>
-                    <div class="col-1 colHeaders"></div>
-                    <div class="col-1 colHeaders"></div>
-                    <div class="col-3 colHeaders">Amount</div>
-                    <!-- stariting with data -->`
         document.getElementById(ids.realToForeign).addEventListener('click',e=>{
+            const headersConst = `<div class="container mx-auto my-auto row">
+                        <div class="col-3 colHeaders"></div>
+                        <div class="col-4 colHeaders"></div>
+                        <div class="col-5 colHeaders">Amount</div>
+                        <!-- stariting with data -->`
             toggleSideBar(false)
             //5 YEARS
             if(btnClicked===btnTypes.FIVEYEARS){
                 var inneText = ``
                 data[0].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYear}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //4 YEARS
@@ -410,16 +422,12 @@
                 var inneText = ``
                 data[1].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYear}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //3 YEARS
@@ -427,16 +435,12 @@
                 var inneText = ``
                 data[2].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYear}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //2 YEARS
@@ -444,16 +448,12 @@
                 var inneText = ``
                 data[3].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYear}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //LAST YEAR
@@ -466,16 +466,12 @@
                 })
                 data[4].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}-${d.curMonth}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //THIS YEAR
@@ -488,16 +484,12 @@
                 })
                 data[11].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}-${d.curMonth}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //LAST MONTH
@@ -511,15 +503,11 @@
                 data[5].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //LAST 30 DAYS
@@ -533,15 +521,11 @@
                 data[6].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //THIS MONTH
@@ -555,19 +539,16 @@
                 data[7].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //TODAY`S VALUES
             if(btnClicked===btnTypes.TODAYVALUES){
+                console.log(data[8])
                 var inneText = ``
                 data[8].sort((a,b)=>{
                     if (a.currency > b.currency) {return 1 }
@@ -577,15 +558,11 @@
                 data[8].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.fetchTime}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.value).toFixed(3)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.value).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //TODAY
@@ -594,15 +571,29 @@
                 data[9].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ ${parseFloat(d.test).toFixed(3)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            //TODAY
+            if(btnClicked===btnTypes.LAST12MONTHS){
+                var inneText = ``
+                data[12].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[12].forEach(d => {
+                    inneText = `${inneText}
+                    <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}-${d.curMonth}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$${parseFloat(d.test).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //CHART
@@ -632,21 +623,22 @@
                             
         document.getElementById(ids.foreignToReal).addEventListener('click',e=>{
             toggleSideBar(false)
+            const headersConst = `<div class="container mx-auto my-auto row">
+                        <div class="col-3 colHeaders"></div>
+                        
+                        <div class="col-4 colHeaders">Amount</div>
+                        
+                        <div class="col-5 colHeaders">Amount</div>
+                        <!-- stariting with data -->`
             //5 YEARS
             if(btnClicked===btnTypes.FIVEYEARS){
                 var inneText = ``
                 data[0].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYear}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //4 YEARS
@@ -654,16 +646,12 @@
                 var inneText = ``
                 data[1].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYear}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //3 YEARS
@@ -671,16 +659,12 @@
                 var inneText = ``
                 data[2].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYear}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //2 YEARS
@@ -688,16 +672,12 @@
                 var inneText = ``
                 data[3].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYear}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //LAST YEAR
@@ -710,16 +690,12 @@
                 })
                 data[4].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}-${d.curMonth}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //LAST MONTH
@@ -733,15 +709,11 @@
                 data[5].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //LAST 30 DAYS
@@ -755,15 +727,11 @@
                 data[6].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //THIS YEAR
@@ -776,16 +744,12 @@
                 })
                 data[11].forEach(d => {
                     inneText = `${inneText}
-                        <div class="col-3 colInfo">${d.curYEAR}-${d.curMonth}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}-${d.curMonth}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //THIS MONTH
@@ -799,19 +763,16 @@
                 data[7].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //TODAY'S VALUES
             if(btnClicked===btnTypes.TODAYVALUES){
+                console.log(data[8])
                 var inneText = ``
                 data[8].sort((a,b)=>{
                     if (a.currency > b.currency) {return 1 }
@@ -821,15 +782,11 @@
                 data[8].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.fetchTime}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.value)).toFixed(2)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.value)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //TODAY
@@ -838,15 +795,28 @@
                 data[9].forEach(d => {
                     inneText = `${inneText}
                         <div class="col-3 colInfo">${d.currencydate.substring(5)}</div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">$ 1,00</div>
-                        <div class="col-1 colInfo"><strong>>></strong></div>
-                        <div class="col-1 colInfo">
-                            <img class="countryIcon" src="/imgs/brazil.png" alt="">
-                        </div>
-                        <div class="col-3 colInfo">R$ ${parseFloat(1/parseFloat(d.test)).toFixed(2)}</div>`})
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
+                document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
+            }
+            if(btnClicked===btnTypes.LAST12MONTHS){
+                var inneText = ``
+                data[12].sort((a,b)=>{
+                    if (a.currency > b.currency) {return 1 }
+                    if (a.currency < b.currency) {return -1 }
+                    return 0
+                })
+                data[12].forEach(d => {
+                    inneText = `${inneText}
+                    <div class="col-3 colInfo">${d.curYear.toString().substr(2,2)}-${d.curMonth}</div>
+                        
+                        <div class="col-4 colInfo"><img class="countryIcon" src="/imgs/${d.currency === 'USD' ? 'usa' : d.currency === 'CAD' ? 'canada' : 'europeanUnion'}.png" alt="">$1,00</div>
+                        
+                        
+                        <div class="col-5 colInfo"><img class="countryIcon" src="/imgs/brazil.png" alt="">R$${parseFloat(1/parseFloat(d.test)).toFixed(6)}</div>`})
                 document.getElementById(ids.mainRowWrapper).innerHTML = `${headersConst}${inneText}</div>`
             }
             //CHART
@@ -874,7 +844,7 @@
                     if (a.currency > b.currency) {return 1 }
                     if (a.currency < b.currency) {return -1 }
                     return 0})
-                parseData(data[8],foreignToReal)})
+                parseData(data[8].reverse(),foreignToReal)})
         document.getElementById(ids.radio2).addEventListener('click',e=>{
             dropMyChart()
             var filtered = data[10].filter(a => {if(a.label.match('thisMonth')){return true}})
@@ -911,6 +881,10 @@
             dropMyChart()
             var filtered = data[10].filter(a => {if(a.label.match('thisYear')||a.label.match('lastYear')||a.label.match(/[2-5]/ig)){return true}})
             parseData(filtered,foreignToReal)})
+        document.getElementById(ids.radio11).addEventListener('click',e=>{
+            dropMyChart()
+            var filtered = data[10].filter(a => {if(a.label.match('last12Months')){return true}})
+            parseData(filtered,foreignToReal)})
     }
     function parseData(array,foreignToReal){
         console.log(array)
@@ -926,7 +900,7 @@
                 })
                 var vals = []
                 innerArray.forEach(e => {
-                    vals.push(parseFloat(foreignToReal ? parseFloat(1/parseFloat(e.value)).toFixed(2) : parseFloat(e.value)).toFixed(3))
+                    vals.push(parseFloat(foreignToReal ? parseFloat(1/parseFloat(e.value)).toFixed(6) : parseFloat(e.value)).toFixed(6))
                 })
                 console.log(innerArray)
                 dArray.push([cur,
@@ -961,14 +935,19 @@
         }
         const config = {
             type: 'line',
+	    alignToPixels: true,
             data: charData,
             options: {
-                scales: {
-                    yAxis: {
-                        min: 0
-                    }
-                },
-                borderWidth: .3
+		responsive: true,
+                //scales: {
+                  //  yAxis: {
+                        //min: 0
+                   // }
+                //},
+                borderWidth: .3,
+		layout: {
+         		padding: 10
+        	}	
             }
         }
         myChart = new Chart(document.getElementById('myChart'),config)

@@ -36,9 +36,9 @@ exports.fetchInformation = (req,res,next) =>{
     })
 }
 //node cron
-cron.schedule('27 */12 8-18 * * *',()=>{
+cron.schedule('27 */1 6-19 * * 1-5',()=>{
     console.log('cron')
-    axios.get(`https://freecurrencyapi.net/api/v2/latest?apikey=${process.env.API_KEY}d&base_currency=${process.env.API_BASE_CUR}`)
+    axios.get(`https://freecurrencyapi.net/api/v2/latest?apikey=${process.env.API_KEY}&base_currency=${process.env.API_BASE_CUR}`)
     .then(response => {
         Currency.getCurrentDate()
         .then(([time,timeMeta])=>{
